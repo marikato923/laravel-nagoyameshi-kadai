@@ -33,6 +33,8 @@ class UserFactory extends Factory
             'postal_code' => fake()->postcode(),
             'address' => fake()->address(),
             'phone_number' => fake()->phoneNumber(),
+            'birthday'=> fake()->date(),
+            'occupation' => fake()->jobTitle(),
         ];
     }
 
