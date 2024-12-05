@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Admin\RestaurantController;
+use App\Http\Controllers\Admin\CategoryController;
+
 
 
 /*
@@ -32,3 +34,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'auth:admin
 
     Route::delete('restaurants/{restaurant}', [RestaurantController::class, 'destroy'])->name('restaurants.destroy');
 });
+
+Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function () {
+    Route::resource('categories', Admin\CategoryController::class)->except(['show']);
+}); 
