@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\Restaurant;
+use App\Models\Category;
 use App\Models\Admin;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -98,7 +99,10 @@ class RestaurantTest extends TestCase
     // storeアクション（店舗登録機能）
     public function test_guest_cannot_store_restaurant()
     {
+        $categories = Category::factory()->count(3)->create();
+
         $restaurantData = Restaurant::factory()->make()->toArray();
+        $restaurantData['category_ids'] = $categories->pluck('id')->toArray();
 
         $response = $this->post('/admin/restaurants', $restaurantData);
         $response->assertRedirect('/admin/login'); 
@@ -106,10 +110,13 @@ class RestaurantTest extends TestCase
 
     public function test_user_cannot_store_restaurant()
     {
+        $categories = Category::factory()->count(3)->create();
+
         $user = User::factory()->create();
         $this->actingAs($user);
 
         $restaurantData = Restaurant::factory()->make()->toArray();
+        $restaurantData['category_ids'] = $categories->pluck('id')->toArray();
 
         $response = $this->post('/admin/restaurants', $restaurantData);
         $response->assertRedirect('/admin/login');
@@ -117,14 +124,39 @@ class RestaurantTest extends TestCase
 
     public function test_admin_can_store_restaurant()
     {
+        $categories = Category::factory()->count(3)->create();
+
         $admin = Admin::factory()->create();
         $this->actingAs($admin, 'admin');
 
         $restaurantData = Restaurant::factory()->make()->toArray();
+        $restaurantData['category_ids'] = $categories->pluck('id')->toArray();
 
         $response = $this->post('/admin/restaurants', $restaurantData);
         $response->assertRedirect('/admin/restaurants'); 
-        $this->assertDatabaseHas('restaurants', $restaurantData);
+
+        $this->assertDatabaseHas('restaurants', [
+            'name' => $restaurantData['name'],
+            'description' => $restaurantData['description'],
+            'lowest_price' => $restaurantData['lowest_price'],
+            'highest_price' => $restaurantData['highest_price'],
+            'postal_code' => $restaurantData['postal_code'],
+            'address' => $restaurantData['address'],
+            'opening_time' => $restaurantData['opening_time'],
+            'closing_time' => $restaurantData['closing_time'],
+            'seating_capacity' => $restaurantData['seating_capacity'],
+        ]);
+
+        $restaurant = Restaurant::create($restaurantData);
+
+        $restaurant->categories()->attach($categories->pluck('id')->toArray());
+
+        foreach($categories as $category) {
+            $this->assertDatabaseHas('category_restaurant', [
+                'restaurant_id' => $restaurant->id,
+                'category_id' => $category->id
+            ]);
+        }
     }
 
     // editアクション（店舗編集ページ）
@@ -161,8 +193,11 @@ class RestaurantTest extends TestCase
     // updateアクション（店舗更新機能）
     public function test_guest_cannot_update_restaurant()
     {
+        $categories = Category::factory()->count(3)->create();
+
         $restaurant = Restaurant::factory()->create();
         $restaurantData = Restaurant::factory()->make()->toArray();
+        $restaurantData['category_ids'] = $categories->pluck('id')->toArray();
 
         $response = $this->put("/admin/restaurants/{$restaurant->id}", $restaurantData);
         $response->assertRedirect('/admin/login');
@@ -170,11 +205,13 @@ class RestaurantTest extends TestCase
 
     public function test_user_cannot_update_restaurant()
     {
-        $user = User::factory()->create();
+        $categories = Category::factory()->count(3)->create();
         $restaurant = Restaurant::factory()->create();
-        $restaurantData = Restaurant::factory()->make()->toArray();
-
+        $user = User::factory()->create();
         $this->actingAs($user);
+
+        $restaurantData = Restaurant::factory()->make()->toArray();
+        $restaurantData['category_ids'] = $categories->pluck('id')->toArray();
 
         $response = $this->put("/admin/restaurants/{$restaurant->id}", $restaurantData);
         $response->assertRedirect('/admin/login');
@@ -182,15 +219,28 @@ class RestaurantTest extends TestCase
 
     public function test_admin_can_update_restaurant()
     {
-        $admin = Admin::factory()->create();
+        $categories = Category::factory()->count(3)->create();
         $restaurant = Restaurant::factory()->create();
-        $restaurantData = Restaurant::factory()->make()->toArray();
 
+        $admin = Admin::factory()->create();
         $this->actingAs($admin, 'admin');
+
+        $restaurantData = Restaurant::factory()->make()->toArray();
+        $restaurantData['category_ids'] = $categories->pluck('id')->toArray();
 
         $response = $this->put("/admin/restaurants/{$restaurant->id}", $restaurantData);
         $response->assertRedirect("/admin/restaurants/{$restaurant->id}");
+
+        unset($restaurantData['category_ids']);
+
         $this->assertDatabaseHas('restaurants', $restaurantData);
+
+        foreach ($categories as $category) {
+            $this->assertDatabaseHas('category_restaurant', [
+                'restaurant_id' => $restaurant->id,
+                'category_id' => $category->id
+            ]);
+        }
     }
 
     // destroyアクション（店舗削除機能）

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Restaurant;
 use Illuminate\Http\Request;
 
@@ -33,7 +34,9 @@ class RestaurantController extends Controller
     // 店舗情報作成ページ
     public function create()
     {
-        return view ('admin.restaurants.create');
+        $categories = Category::all();
+
+        return view ('admin.restaurants.create', compact('categories'));
     }
 
     // バリデーションとデータベースへの保存
@@ -74,6 +77,9 @@ class RestaurantController extends Controller
         $restaurant->image = $image;
         $restaurant->save();   
 
+        $category_ids = array_filter($request->input('category_ids'));
+        $restaurant->categories()->sync($category_ids);
+
     // セッションにフラッシュメッセージを追加
     session()->flash('flash_message', '店舗を登録しました。');
 
@@ -84,7 +90,11 @@ class RestaurantController extends Controller
     // editアクション
     public function edit(Restaurant $restaurant)
     {
-        return view('admin.restaurants.edit', compact('restaurant'));
+        $categories = Category::all();
+
+        $category_ids = $restaurant->categories->pluck('id')->toArray();
+
+        return view('admin.restaurants.edit', compact('restaurant', 'categories', 'category_ids'));
     }
 
     // updateアクション
@@ -123,6 +133,9 @@ class RestaurantController extends Controller
         $restaurant->seating_capacity = $validated['seating_capacity'];
 
         $restaurant->save();
+
+        $category_ids = array_filter($request->input('category_ids'));
+        $restaurant->categories()->sync($category_ids);
 
         session()->flash('flash_message', '店舗を編集しました。');
 

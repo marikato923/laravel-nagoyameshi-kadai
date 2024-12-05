@@ -25,4 +25,11 @@ class Restaurant extends Model
         'created_at',
         'updated_at'
     ];
+
+    // Categoryとのリレーション
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'category_restaurant', 'restaurant_id', 'category_id')
+                    ->withTimestamps();
+    }
 }
