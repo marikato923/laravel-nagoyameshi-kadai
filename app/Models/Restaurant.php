@@ -32,4 +32,10 @@ class Restaurant extends Model
         return $this->belongsToMany(Category::class, 'category_restaurant', 'restaurant_id', 'category_id')
                     ->withTimestamps();
     }
+
+    // 定休日とのリレーション
+    public function regular_holidays()
+    {
+        return $this->belongsToMany(RegularHoliday::class, 'regular_holiday_restaurant');
+    }
 }

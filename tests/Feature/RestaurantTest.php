@@ -7,6 +7,7 @@ use App\Models\Restaurant;
 use App\Models\Category;
 use App\Models\Admin;
 use App\Models\User;
+use App\Models\RegularHoliday;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -103,6 +104,7 @@ class RestaurantTest extends TestCase
 
         $restaurantData = Restaurant::factory()->make()->toArray();
         $restaurantData['category_ids'] = $categories->pluck('id')->toArray();
+        $restaurantData['regular_holiday_ids'] = RegularHoliday::factory()->count(1)->create()->pluck('id')->toArray();
 
         $response = $this->post('/admin/restaurants', $restaurantData);
         $response->assertRedirect('/admin/login'); 
@@ -117,6 +119,7 @@ class RestaurantTest extends TestCase
 
         $restaurantData = Restaurant::factory()->make()->toArray();
         $restaurantData['category_ids'] = $categories->pluck('id')->toArray();
+        $restaurantData['regular_holiday_ids'] = RegularHoliday::factory()->count(1)->create()->pluck('id')->toArray();
 
         $response = $this->post('/admin/restaurants', $restaurantData);
         $response->assertRedirect('/admin/login');
@@ -131,6 +134,7 @@ class RestaurantTest extends TestCase
 
         $restaurantData = Restaurant::factory()->make()->toArray();
         $restaurantData['category_ids'] = $categories->pluck('id')->toArray();
+        $restaurantData['regular_holiday_ids'] = RegularHoliday::factory()->count(1)->create()->pluck('id')->toArray();
 
         $response = $this->post('/admin/restaurants', $restaurantData);
         $response->assertRedirect('/admin/restaurants'); 
@@ -198,6 +202,7 @@ class RestaurantTest extends TestCase
         $restaurant = Restaurant::factory()->create();
         $restaurantData = Restaurant::factory()->make()->toArray();
         $restaurantData['category_ids'] = $categories->pluck('id')->toArray();
+        $restaurantData['regular_holiday_ids'] = RegularHoliday::factory()->count(1)->create()->pluck('id')->toArray();
 
         $response = $this->put("/admin/restaurants/{$restaurant->id}", $restaurantData);
         $response->assertRedirect('/admin/login');
@@ -212,6 +217,7 @@ class RestaurantTest extends TestCase
 
         $restaurantData = Restaurant::factory()->make()->toArray();
         $restaurantData['category_ids'] = $categories->pluck('id')->toArray();
+        $restaurantData['regular_holiday_ids'] = RegularHoliday::factory()->count(1)->create()->pluck('id')->toArray();
 
         $response = $this->put("/admin/restaurants/{$restaurant->id}", $restaurantData);
         $response->assertRedirect('/admin/login');
@@ -221,6 +227,7 @@ class RestaurantTest extends TestCase
     {
         $categories = Category::factory()->count(3)->create();
         $restaurant = Restaurant::factory()->create();
+        $restaurantData['regular_holiday_ids'] = RegularHoliday::factory()->count(1)->create()->pluck('id')->toArray();
 
         $admin = Admin::factory()->create();
         $this->actingAs($admin, 'admin');
