@@ -120,6 +120,9 @@ return [
         ],
     ],
 
-    'attributes' => [],
+    'attributes' => [
+        'category_ids.0' => 'カテゴリ1',
+        'address' => '住所',
+    ],
 
 ];
