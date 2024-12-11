@@ -30,7 +30,7 @@ class UserTest extends TestCase
     {
         $admin = Admin::factory()->create();
 
-        $response = $this->actingAs($admin)->get(route('user.index'));
+        $response = $this->actingAs($admin, 'admin')->get(route('user.index'));
         $response->assertRedirect(route('admin.home'));
     }
 
@@ -58,7 +58,7 @@ class UserTest extends TestCase
 
         $response = $this->actingAs($user)->get(route('user.edit', ['user' => $user->id]));  // 自分のユーザーIDを渡す
         $response->assertStatus(200);
-        $response->assertViewIs('user.edit');  // ビュー名を正しく指定
+        $response->assertViewIs('user.edit'); 
     }
 
     public function test_admin_cannot_access_user_edit()
@@ -66,7 +66,7 @@ class UserTest extends TestCase
         $admin = Admin::factory()->create();
         $user = User::factory()->create();
 
-        $response = $this->actingAs($admin)->get(route('user.edit', ['user' => $user->id]));  // ユーザーIDを渡す
+        $response = $this->actingAs($admin, 'admin')->get(route('user.edit', ['user' => $user->id]));  // ユーザーIDを渡す
         $response->assertRedirect(route('admin.home')); 
     }
 
@@ -126,7 +126,7 @@ class UserTest extends TestCase
         $admin = Admin::factory()->create();
         $user = User::factory()->create();
 
-        $response = $this->actingAs($admin)->patch(route('user.update', ['user' => $user->id]), [
+        $response = $this->actingAs($admin, 'admin')->patch(route('user.update', ['user' => $user->id]), [
             'name' => 'New Name',
             'kana' => 'カナカナ',      
             'email' => 'newemail@example.com', 
@@ -135,6 +135,6 @@ class UserTest extends TestCase
             'phone_number' => '08012345678', 
         ]);
 
-        $response->assertRedirect('/admin/home'); 
+        $response->assertRedirect(route('admin.home')); 
     }
 }

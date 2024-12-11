@@ -35,14 +35,6 @@ Route::group(['middleware' => ['auth', 'verified', 'guest:admin']], function() {
     Route::patch('user/{user}', [UserController::class, 'update'])->name('user.update');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    // 一般ユーザー専用のルート
-    Route::middleware(['guest:admin'])->group(function () {
-        Route::get('user', [UserController::class, 'index'])->name('user.index');
-        Route::get('user/{user}/edit', [UserController::class, 'edit'])->name('user.edit');
-    });
-});
-
 // 管理者ユーザー用のルート
 Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function () {
     Route::get('home', [Admin\HomeController::class, 'index'])->name('home');
