@@ -6,7 +6,9 @@ use App\Http\Controllers\Admin\RestaurantController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CompanyController;
 use App\Http\Controllers\Admin\TermController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,14 +23,30 @@ use App\Http\Controllers\HomeController;
 
 require __DIR__.'/auth.php';
 
+// ゲスト（未ログイン）ユーザー用のルート
 Route::group(['middleware' => 'guest:admin'], function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
 });
 
+// 一般ユーザー用のルート
+Route::group(['middleware' => ['auth', 'verified', 'guest:admin']], function() {
+    Route::get('user', [UserController::class, 'index'])->name('user.index');
+    Route::get('user/{user}/edit', [UserController::class, 'edit'])->name('user.edit');
+    Route::patch('user/{user}', [UserController::class, 'update'])->name('user.update');
+});
 
+Route::middleware(['auth', 'verified'])->group(function () {
+    // 一般ユーザー専用のルート
+    Route::middleware(['guest:admin'])->group(function () {
+        Route::get('user', [UserController::class, 'index'])->name('user.index');
+        Route::get('user/{user}/edit', [UserController::class, 'edit'])->name('user.edit');
+    });
+});
+
+// 管理者ユーザー用のルート
 Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function () {
     Route::get('home', [Admin\HomeController::class, 'index'])->name('home');
-    Route::resource('users', Admin\UserController::class)->only(['index', 'show']);
+    Route::resource('users', AdminUserController::class)->only(['index', 'show']);
     Route::resource('restaurants', RestaurantController::class);
     Route::delete('restaurants/{restaurant}', [RestaurantController::class, 'destroy'])->name('restaurants.destroy');
     Route::resource('categories', Admin\CategoryController::class)->except(['show']);
@@ -37,5 +55,5 @@ Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function
     Route::put('company', [Admin\CompanyController::class, 'update'])->name('company.update');
     Route::get('terms', [Admin\TermController::class, 'index'])->name('terms.index');
     Route::get('terms/edit', [Admin\TermController::class, 'edit'])->name('terms.edit');
-    Route::put('terms/', [Admin\TermController::class, 'update'])->name('terms.update');
+    Route::put('terms', [Admin\TermController::class, 'update'])->name('terms.update');
 });

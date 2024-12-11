@@ -37,7 +37,7 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'postal_code' =>['required', 'digits:7'],
             'address' => ['required', 'string', 'max:255'],
-            'phone_number' => ['required', 'digits_between:10, 11'],
+            'phone_number' => ['required', 'digits_between:10,11'],
             'birthday' => ['nullable', 'digits:8'],
             'occupation' => ['nullable', 'string', 'max:255'],
         ]);

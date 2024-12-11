@@ -10,6 +10,8 @@ use Tests\TestCase;
 
 class HomeTest extends TestCase
 {
+   use RefreshDatabase;
+
    public function test_guests_can_access_home_page()
    {
     $response = $this->get('/');
