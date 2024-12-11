@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RestaurantController;
+use App\Http\Controllers\SubscriptionController;
 use App\Models\Restaurant;
 
 /*
@@ -32,10 +33,32 @@ Route::group(['middleware' => 'guest:admin'], function () {
     Route::get('restaurants/{restaurant}', [RestaurantController::class, 'show'])->name('restaurants.show');
 });
 
-Route::group(['middleware' => ['auth', 'verified', 'guest:admin']], function() {
+Route::group(['middleware' => ['auth', 'verified']], function() {
     Route::get('user', [UserController::class, 'index'])->name('user.index');
     Route::get('user/{user}/edit', [UserController::class, 'edit'])->name('user.edit');
     Route::patch('user/{user}', [UserController::class, 'update'])->name('user.update');
+});
+
+Route::group(['middleware' => ['auth', 'verified']], function () {
+    // NotSubscribed ミドルウェアを適用するグループ
+    Route::middleware('NotSubscribed')->group(function () {
+        Route::get('subscription/create', [SubscriptionController::class, 'create'])
+            ->name('subscription.create');
+        Route::post('/subscription/store', [SubscriptionController::class, 'store'])
+            ->name('subscription.store');
+    });
+
+    // subscribed ミドルウェアを適用するグループ
+    Route::middleware('Subscribed')->group(function () {
+        Route::get('/subscription/edit', [SubscriptionController::class, 'edit'])
+            ->name('subscription.edit');
+        Route::patch('/subscription/update', [SubscriptionController::class, 'update'])
+            ->name('subscription.update');
+        Route::get('/subscription/cancel', [SubscriptionController::class, 'cancel'])
+            ->name('subscription.cancel');
+        Route::delete('/subscription', [SubscriptionController::class, 'destroy'])
+            ->name('subscription.destroy');
+    });
 });
 
 // 管理者用のルート
