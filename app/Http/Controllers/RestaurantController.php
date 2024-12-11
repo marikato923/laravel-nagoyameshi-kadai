@@ -62,7 +62,6 @@ class RestaurantController extends Controller
 
     $total = $restaurants->total();
 
-
     return view('restaurants.index', compact(
         'keyword',
         'category_id',
@@ -73,5 +72,9 @@ class RestaurantController extends Controller
         'categories',
         'total'
     ));
-}
+    }
+    public function show(Restaurant $restaurant)
+    {
+        return view('restaurants.show', compact('restaurant'));
+    }
 }
