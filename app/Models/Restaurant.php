@@ -40,6 +40,11 @@ class Restaurant extends Model
         return $this->belongsToMany(RegularHoliday::class, 'regular_holiday_restaurant');
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    } 
+
     public static function storeRestaurant($request)
     {
 
@@ -66,4 +71,11 @@ class Restaurant extends Model
 
          return $restaurant;
     }
+
+    // 店舗の平均評価順
+    public function ratingSortable($query, $direction)
+    {
+        return $query->withAvg('reviews', 'score')->orderBy('reviews_avg_score', $direction);
+    }
+    
 }

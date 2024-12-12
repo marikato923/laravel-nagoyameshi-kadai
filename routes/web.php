@@ -11,6 +11,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\ReviewController;
 use App\Models\Restaurant;
 
 /*
@@ -39,14 +40,12 @@ Route::group(['middleware' => ['auth', 'verified']], function() {
     Route::patch('user/{user}', [UserController::class, 'update'])->name('user.update');
 });
 
-Route::group(['middleware' => ['auth', 'verified']], function () {
     // NotSubscribed ミドルウェアを適用するグループ
     Route::middleware('NotSubscribed')->group(function () {
         Route::get('subscription/create', [SubscriptionController::class, 'create'])
             ->name('subscription.create');
         Route::post('/subscription/store', [SubscriptionController::class, 'store'])
             ->name('subscription.store');
-    });
 
     // subscribed ミドルウェアを適用するグループ
     Route::middleware('Subscribed')->group(function () {
@@ -59,6 +58,14 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::delete('/subscription', [SubscriptionController::class, 'destroy'])
             ->name('subscription.destroy');
     });
+});
+
+// レビュー管理機能
+Route::group(['middleware' => ['auth', 'verified']], function() {
+    Route::get('/restaurants/{restaurant}/reviews', [ReviewController::class, 'index'])
+            ->name('restaurants.reviews.index'); // ログイン済みの一般ユーザーはアクセス可能
+    Route::middleware('Subscribed')->resource('restaurants.reviews', ReviewController::class)
+            ->except(['index', 'show']); // 認証済み、かつ有料会員のみアクセス可能
 });
 
 // 管理者用のルート
