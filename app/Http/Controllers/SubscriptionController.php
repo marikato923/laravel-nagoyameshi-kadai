@@ -76,7 +76,7 @@ class SubscriptionController extends Controller
         try {
             $user->subscription('premium_plan')->cancelNow();
 
-            return redirect('/')
+            return redirect()->route('home')
                     ->with('flash_message', '有料プランを解約しました。');
         } catch (\Exception $e) {
             return back()

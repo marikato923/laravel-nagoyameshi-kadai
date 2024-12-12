@@ -40,12 +40,14 @@ Route::group(['middleware' => ['auth', 'verified']], function() {
     Route::patch('user/{user}', [UserController::class, 'update'])->name('user.update');
 });
 
+Route::group(['middleware' => ['auth', 'verified']], function() {
     // NotSubscribed ミドルウェアを適用するグループ
     Route::middleware('NotSubscribed')->group(function () {
         Route::get('subscription/create', [SubscriptionController::class, 'create'])
             ->name('subscription.create');
         Route::post('/subscription/store', [SubscriptionController::class, 'store'])
             ->name('subscription.store');
+    });
 
     // subscribed ミドルウェアを適用するグループ
     Route::middleware('Subscribed')->group(function () {
