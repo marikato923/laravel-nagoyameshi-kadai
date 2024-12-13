@@ -9,71 +9,66 @@ use App\Models\Category;
 class RestaurantController extends Controller
 {
     public function index(Request $request)
-{
-    $keyword = $request->input('keyword');
-    $category_id = $request->input('category_id');
-    $price = $request->input('price');
-    $sorted = 'created_at desc';
+    {
+        $keyword = $request->input('keyword');
+        $category_id = $request->input('category_id');
+        $price = $request->input('price');
+        $sorted = $request->input('select_sort', 'created_at desc');
 
-    $sorts = [
-        '掲載日が新しい順' => 'created_at desc',
-        '価格が安い順' => 'lowest_price asc',
-        '評価が高い順' => 'rating desc',
-    ];
+        $sorts = [
+            '掲載日が新しい順' => 'created_at desc',
+            '価格が安い順' => 'lowest_price asc',
+            '評価が高い順' => 'rating desc',
+            '人気順' => 'popular desc', // 予約数でソート
+        ];
 
-    $query = Restaurant::query();
-
-    if ($keyword) {
-        $query->where('name', 'like', "%{$keyword}%")
-            ->orWhere("address", 'like', "%{$keyword}%")
-            ->orWhereHas('categories', function ($query) use ($keyword) {
-                $query->where('categories.name', 'like', "%{$keyword}%");
-            })->get();
-    }
-
-    if ($category_id) {
-        $query->whereHas('categories', function ($query) use ($category_id) {
-            $query->where('categories.id', $category_id);
-        });
-    }
-
-    if ($price) {
-        $query->where('lowest_price', '<=', $price);
-    }
-
-    if (!$keyword && !$category_id && !$price) {
         $query = Restaurant::query();
+
+        // キーワード検索
+        if ($keyword) {
+            $query->where('name', 'like', "%{$keyword}%")
+                ->orWhere('address', 'like', "%{$keyword}%")
+                ->orWhereHas('categories', function ($query) use ($keyword) {
+                    $query->where('categories.name', 'like', "%{$keyword}%");
+                });
+        }
+
+        // カテゴリ絞り込み
+        if ($category_id) {
+            $query->whereHas('categories', function ($query) use ($category_id) {
+                $query->where('categories.id', $category_id);
+            });
+        }
+
+        // 価格絞り込み
+        if ($price) {
+            $query->where('lowest_price', '<=', $price);
+        }
+
+        // 並べ替え処理
+        if ($sorted === 'popular desc') {
+            $query = Restaurant::popularSortable();
+        } else {
+            [$column, $direction] = explode(' ', $sorted);
+            $query->orderBy($column, $direction);
+        }
+
+        $restaurants = $query->paginate(15);
+        $categories = Category::all();
+        $total = $restaurants->total();
+
+        return view('restaurants.index', compact(
+            'keyword',
+            'category_id',
+            'price',
+            'sorts',
+            'sorted',
+            'restaurants',
+            'categories',
+            'total'
+        ));
     }
 
-    $sort_query = [];
-    $sorted = "created_at desc";
-
-    if ($request->has('salect_sort')) {
-        $slices = explode(' ', $request->input('select_sort'));
-        $sort_query[$slices[0]] = $slices[1];
-        $sorted = $request->input('select_sort');
-    }
-
-    $restaurants = $query
-        ->sortable($sort_query)
-        ->orderBy('created_at', 'desc')
-        ->paginate(15);
-    
-    $categories = Category::all();
-
-    $total = $restaurants->total();
-
-    return view('restaurants.index', compact(
-        'keyword',
-        'category_id',
-        'price',
-        'sorts',
-        'sorted',
-        'restaurants',
-        'categories',
-        'total'
-    ));
-    }
     public function show(Restaurant $restaurant)
     {
         return view('restaurants.show', compact('restaurant'));

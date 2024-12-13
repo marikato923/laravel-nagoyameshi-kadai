@@ -11,14 +11,17 @@ use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
+    public function __construct()
+    {
+        if (auth('admin')->check()) {
+            return redirect()->route('admin.home');
+        }
+    }
+
     public function index(Restaurant $restaurant)
-{
+    {
         $reviews = $restaurant->reviews()->orderBy('created_at', 'desc');
         $user = Auth::user();
-
-        if (auth('admin')->check()) {
-        return redirect()->route('admin.home');
-        }
 
         if ($user && $user->subscribed('premium_plan')) {
             $reviews = $reviews->paginate(5);
@@ -32,20 +35,12 @@ class ReviewController extends Controller
 
     public function create(Restaurant $restaurant)
     {
-        if (auth('admin')->check()) {
-            return redirect()->route('admin.home');
-        }
-
         return view('reviews.create', compact('restaurant'));
     }
 
 
     public function store(Request $request, Restaurant $restaurant, Review $review)
     {
-        if (auth('admin')->check()) {
-            return redirect()->route('admin.home');
-        }
-
         $request->validate([
             'score' => 'required|numeric|between:1,5',
             'content' => 'required',
@@ -66,10 +61,6 @@ class ReviewController extends Controller
 
     public function edit(Restaurant $restaurant, Review $review)
     {
-        if (auth('admin')->check()) {
-            return redirect()->route('admin.home');
-        }
-
         if($review->user_id !== auth()->id()) {
             return redirect()->route('restaurants.reviews.index', ['restaurant' => $restaurant])
                 ->with('error_message', '不正なアクセスです。');
@@ -80,10 +71,6 @@ class ReviewController extends Controller
 
     public function update(Request $request, Restaurant $restaurant, Review $review)
     {
-        if (auth('admin')->check()) {
-            return redirect()->route('admin.home');
-        }
-
         if ($review->user_id !== auth()->id()) {
             return redirect()->route('restaurants.reviews.index', ['restaurant' => $restaurant])
             ->with('error_message', '不正なアクセスです。');
@@ -101,10 +88,6 @@ class ReviewController extends Controller
 
     public function destroy(Request $request, Restaurant $restaurant, Review $review)
     {
-        if (auth('admin')->check()) {
-            return redirect()->route('admin.home');
-        }
-
         if($review->user_id !== auth()->id()) {
             return redirect()->route('restaurants.reviews.index', ['restaurant' => $restaurant])
             ->with('error_message', '不正なアクセスです。');
