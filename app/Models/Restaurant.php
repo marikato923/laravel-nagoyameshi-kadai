@@ -52,6 +52,12 @@ class Restaurant extends Model
         return $this->hasMany(Reservation::class);
     }
 
+    // お気に入りした会員とのリレーション
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'restaurant_user')->withTimestamps();
+    }
+
     public static function storeRestaurant($request)
     {
 
