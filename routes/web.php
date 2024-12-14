@@ -89,8 +89,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function
     Route::resource('categories', Admin\CategoryController::class)->except(['show']);
     Route::get('company', [AdminCompanyController::class, 'index'])->name('company.index');
     Route::get('company/edit', [AdminCompanyController::class, 'edit'])->name('company.edit');
-    Route::put('company', [AdminCompanyController::class, 'update'])->name('company.update');
+    Route::patch('company', [AdminCompanyController::class, 'update'])->name('company.update');
     Route::get('terms', [AdminTermController::class, 'index'])->name('terms.index');
     Route::get('terms/edit', [AdminTermController::class, 'edit'])->name('terms.edit');
-    Route::put('terms', [AdminTermController::class, 'update'])->name('terms.update');
+    Route::patch('terms', [AdminTermController::class, 'update'])->name('terms.update');
 });

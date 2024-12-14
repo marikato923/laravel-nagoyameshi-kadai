@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\tests\Feature\Admin;
+namespace Tests\Feature\Admin;
 
 use App\Models\Term;
 use App\Models\Admin;
@@ -64,7 +64,7 @@ class TermTest extends TestCase
     public function test_non_logged_in_user_cannot_update_term()
     {
         $term = Term::factory()->create();
-        $response = $this->put(route('admin.terms.update', $term), [
+        $response = $this->patch(route('admin.terms.update', $term), [
             'content' => '新しい概要'
         ]);
         $response->assertRedirect('/admin/login');
@@ -74,7 +74,7 @@ class TermTest extends TestCase
     {
         $user = User::factory()->create();
         $term = Term::factory()->create();
-        $response = $this->actingAs($user)->put(route('admin.terms.update', $term), [
+        $response = $this->actingAs($user)->patch(route('admin.terms.update', $term), [
             'content' => '新しい概要'
         ]);
         $response->assertRedirect('/admin/login'); 
@@ -84,7 +84,7 @@ class TermTest extends TestCase
     {
         $admin = Admin::factory()->create();
         $term = Term::factory()->create();
-        $response = $this->actingAs($admin, 'admin')->put(route('admin.terms.update', $term), [
+        $response = $this->actingAs($admin, 'admin')->patch(route('admin.terms.update', $term), [
             'content' => '新しい概要'
         ]);
         $response->assertRedirect(route('admin.terms.index')); 

@@ -64,7 +64,7 @@ class CompanyTest extends TestCase
     public function test_guest_in_user_cannot_update_company()
     {
         $company = Company::factory()->create();
-        $response = $this->put(route('admin.company.update', $company), [
+        $response = $this->patch(route('admin.company.update', $company), [
             'name' => '新しい会社名',
             'postal_code' => '1111111',
             'address' => '新しい住所',
@@ -81,7 +81,7 @@ class CompanyTest extends TestCase
     {
         $user = User::factory()->create();
         $company = Company::factory()->create();
-        $response = $this->actingAs($user)->put(route('admin.company.update', $company), [
+        $response = $this->actingAs($user)->patch(route('admin.company.update', $company), [
             'name' => '新しい会社名',
             'postal_code' => '1111111',
             'address' => '新しい住所',
@@ -98,7 +98,7 @@ class CompanyTest extends TestCase
     {
         $admin = Admin::factory()->create();
         $company = Company::factory()->create();
-        $response = $this->actingAs($admin, 'admin')->put(route('admin.company.update', $company), [
+        $response = $this->actingAs($admin, 'admin')->patch(route('admin.company.update', $company), [
             'name' => '新しい会社名',
             'postal_code' => '1111111',
             'address' => '新しい住所',

@@ -122,7 +122,23 @@ return [
 
     'attributes' => [
         'category_ids.0' => 'カテゴリ1',
+        'name' => '店舗名',
+        'description' => '紹介文',
+        'lowest_price' => '最低価格',
+        'highest_price' => '最高価格',
+        'postal_code' => '郵便番号',
+        'opening_time' => '開店時間',
+        'closing_time' => '閉店時間',
+        'seating_capacity' => '席数',
         'address' => '住所',
-    ],
-
+        'content' => '本文',
+        'reservation_date' => '予約日',
+        'reservation_time' => '時間',
+        'number_of_people' => '人数',
+        'representative' => '代表者',
+        'establishment_date' => '設立日',
+        'capital' => '資本金',
+        'business' => '事業内容',
+        'number_of_employees' => '従業員数',
+      ],
 ];
