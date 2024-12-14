@@ -13,20 +13,20 @@ class CompanyTest extends TestCase
     use RefreshDatabase;
 
     // indexアクション
-    public function test_non_logged_in_user_cannot_access_company_index()
+    public function test_guest_user_cannot_access_company_index()
     {
         $response = $this->get(route('admin.company.index'));
         $response->assertRedirect('/admin/login');
     }
 
-    public function test_logged_in_user_cannot_access_company_index()
+    public function test_authenticated_user_cannot_access_company_index()
     {
         $user = User::factory()->create(); 
         $response = $this->actingAs($user)->get(route('admin.company.index'));
         $response->assertRedirect('/admin/login');
     }
 
-    public function test_logged_in_admin_can_access_company_index()
+    public function test_authenticated_admin_can_access_company_index()
     {
         $admin = Admin::factory()->create();
 
@@ -37,14 +37,14 @@ class CompanyTest extends TestCase
     }
 
     // editアクション
-    public function test_non_logged_in_user_cannot_access_company_edit()
+    public function test_guest_cannot_access_company_edit()
     {
         $company = Company::factory()->create();
         $response = $this->get(route('admin.company.edit', $company));
         $response->assertRedirect('/admin/login'); 
     }
 
-    public function test_logged_in_user_cannot_access_company_edit()
+    public function test_authenticated_user_cannot_access_company_edit()
     {
         $user = User::factory()->create();
         $company = Company::factory()->create();
@@ -52,7 +52,7 @@ class CompanyTest extends TestCase
         $response->assertRedirect('/admin/login'); 
     }
 
-    public function test_logged_in_admin_can_access_company_edit()
+    public function test_authenticated_admin_can_access_company_edit()
     {
         $admin = Admin::factory()->create();
         $company = Company::factory()->create();
@@ -61,7 +61,7 @@ class CompanyTest extends TestCase
     }
 
     // updateアクション
-    public function test_non_logged_in_user_cannot_update_company()
+    public function test_guest_in_user_cannot_update_company()
     {
         $company = Company::factory()->create();
         $response = $this->put(route('admin.company.update', $company), [
@@ -77,7 +77,7 @@ class CompanyTest extends TestCase
         $response->assertRedirect('/admin/login');
     }
 
-    public function test_logged_in_user_cannot_update_company()
+    public function test_authenticated_user_cannot_update_company()
     {
         $user = User::factory()->create();
         $company = Company::factory()->create();
@@ -94,7 +94,7 @@ class CompanyTest extends TestCase
         $response->assertRedirect('/admin/login'); 
     }
 
-    public function test_logged_in_admin_can_update_company()
+    public function test_authenticated_admin_can_update_company()
     {
         $admin = Admin::factory()->create();
         $company = Company::factory()->create();

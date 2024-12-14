@@ -4,16 +4,19 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Admin\RestaurantController as AdminRestaurantController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\CompanyController;
-use App\Http\Controllers\Admin\TermController;
+use App\Http\Controllers\Admin\CompanyController as AdminCompanyController;
+use App\Http\Controllers\Admin\TermController as AdminTermController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\TermController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\FavoriteController;
+
 
 
 /*
@@ -33,6 +36,8 @@ Route::group(['middleware' => 'guest:admin'], function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('restaurants', [RestaurantController::class, 'index'])->name('restaurants.index');
     Route::get('restaurants/{restaurant}', [RestaurantController::class, 'show'])->name('restaurants.show');
+    Route::get('company', [CompanyController::class, 'index'] )->name('company.index'); 
+    Route::get('terms', [TermController::class, 'index'] )->name('terms.index'); 
 });
 
 // 認証とメール認証が必要なルート
@@ -82,10 +87,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function
     Route::resource('restaurants', AdminRestaurantController::class);
     Route::delete('restaurants/{restaurant}', [AdminRestaurantController::class, 'destroy'])->name('restaurants.destroy');
     Route::resource('categories', Admin\CategoryController::class)->except(['show']);
-    Route::get('company', [Admin\CompanyController::class, 'index'])->name('company.index');
-    Route::get('company/edit', [Admin\CompanyController::class, 'edit'])->name('company.edit');
-    Route::put('company', [Admin\CompanyController::class, 'update'])->name('company.update');
-    Route::get('terms', [Admin\TermController::class, 'index'])->name('terms.index');
-    Route::get('terms/edit', [Admin\TermController::class, 'edit'])->name('terms.edit');
-    Route::put('terms', [Admin\TermController::class, 'update'])->name('terms.update');
+    Route::get('company', [AdminCompanyController::class, 'index'])->name('company.index');
+    Route::get('company/edit', [AdminCompanyController::class, 'edit'])->name('company.edit');
+    Route::put('company', [AdminCompanyController::class, 'update'])->name('company.update');
+    Route::get('terms', [AdminTermController::class, 'index'])->name('terms.index');
+    Route::get('terms/edit', [AdminTermController::class, 'edit'])->name('terms.edit');
+    Route::put('terms', [AdminTermController::class, 'update'])->name('terms.update');
 });
