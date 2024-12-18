@@ -27,6 +27,13 @@ class Restaurant extends Model
         'updated_at'
     ];
 
+    public $sortable = [
+        'created_at',
+        'lowest_price',
+        'rating', 
+        'popular',  
+    ];
+
     // Categoryとのリレーション
     public function categories()
     {
@@ -86,15 +93,14 @@ class Restaurant extends Model
     }
 
     // 店舗の平均評価順
-    public function ratingSortable($query, $direction)
+    public static function ratingSortable($query)
     {
-        return $query->withAvg('reviews', 'score')->orderBy('reviews_avg_score', $direction);
+        return $query->withAvg('reviews', 'score')->orderBy('reviews_avg_score', 'desc');
     }
 
     // 予約数が多い順
-    public function popularSortable($query, $dorection)
+    public static function popularSortable($query)
     {
         return $query->withCount('reservations')->orderBy('reservations_count', 'desc');
     }
-    
 }

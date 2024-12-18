@@ -122,7 +122,7 @@ return [
 
     'attributes' => [
         'category_ids.0' => 'カテゴリ1',
-        'name' => '店舗名',
+        'name' => '名前',
         'description' => '紹介文',
         'lowest_price' => '最低価格',
         'highest_price' => '最高価格',

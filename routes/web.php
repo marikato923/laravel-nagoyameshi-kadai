@@ -2,8 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\Admin\HomeController as AdminHomeController;
 use App\Http\Controllers\Admin\RestaurantController as AdminRestaurantController;
-use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\CompanyController as AdminCompanyController;
 use App\Http\Controllers\Admin\TermController as AdminTermController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
@@ -82,11 +83,11 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
 // 管理者用のルート
 Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function () {
-    Route::get('home', [Admin\HomeController::class, 'index'])->name('home');
+    Route::get('home', [AdminHomeController::class, 'index'])->name('home');
     Route::resource('users', AdminUserController::class)->only(['index', 'show']);
     Route::resource('restaurants', AdminRestaurantController::class);
     Route::delete('restaurants/{restaurant}', [AdminRestaurantController::class, 'destroy'])->name('restaurants.destroy');
-    Route::resource('categories', Admin\CategoryController::class)->except(['show']);
+    Route::resource('categories', AdminCategoryController::class)->except(['show']);
     Route::get('company', [AdminCompanyController::class, 'index'])->name('company.index');
     Route::get('company/edit', [AdminCompanyController::class, 'edit'])->name('company.edit');
     Route::patch('company', [AdminCompanyController::class, 'update'])->name('company.update');

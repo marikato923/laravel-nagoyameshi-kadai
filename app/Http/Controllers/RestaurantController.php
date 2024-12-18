@@ -36,7 +36,7 @@ class RestaurantController extends Controller
         // カテゴリ絞り込み
         if ($category_id) {
             $query->whereHas('categories', function ($query) use ($category_id) {
-                $query->where('categories.id', $category_id);
+                $query->where('id', $category_id);
             });
         }
 
@@ -44,13 +44,12 @@ class RestaurantController extends Controller
         if ($price) {
             $query->where('lowest_price', '<=', $price);
         }
-
+        
         // 並べ替え処理
-        if ($sorted === 'popular desc') {
-            $query = Restaurant::popularSortable();
-        } else {
-            [$column, $direction] = explode(' ', $sorted);
-            $query->orderBy($column, $direction);
+        if ($sorted === 'rating desc') {
+            $query = Restaurant::ratingSortable($query);
+        } elseif ($sorted === 'popular desc') {
+            $query = Restaurant::popularSortable($query);
         }
 
         $restaurants = $query->paginate(15);
@@ -64,7 +63,7 @@ class RestaurantController extends Controller
             'sorts',
             'sorted',
             'restaurants',
-            'categories',
+            'categories', 
             'total'
         ));
     }
